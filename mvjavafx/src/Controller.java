@@ -1,3 +1,5 @@
+import java.io.File;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -5,12 +7,19 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Controller {
+
+    private MediaView view;
+
+    private MediaPlayer player;
+
     private Stage mainWindow;
 
     public void setMainWindow(Stage MainWindow){
@@ -79,17 +88,39 @@ public class Controller {
     @FXML
     private Button play;
 
+    public void pause(ActionEvent event){
+        if (!(view.getMediaPlayer().getStatus()==MediaPlayer.Status.PLAYING)) {
+            view.getMediaPlayer().play();
+        }
+    }
+
     @FXML
     private Button save;
+
+    @FXML
+    private Button videoStart;
+
+    @FXML
+    private HBox video;
+
+    public void playVideo(ActionEvent event){
+        video.getChildren().clear();
+        Media media = new Media (new File("VID-20250110-WA0003.mp4").toURI().toString());
+        player = new MediaPlayer (media);
+        view = new MediaView (player);
+        view.fitHeightProperty().bind(video.heightProperty());
+        view.fitWidthProperty().bind(video.widthProperty());
+
+        video.getChildren().add(view);
+
+        player.play();
+    }
 
     @FXML
     private Button slow;
 
     @FXML
     private Text title;
-
-    @FXML
-    private Pane video;
 
     @FXML
     private ScrollPane videos;
