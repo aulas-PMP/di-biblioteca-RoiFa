@@ -91,6 +91,8 @@ public class Controller {
     public void pause(ActionEvent event){
         if (!(view.getMediaPlayer().getStatus()==MediaPlayer.Status.PLAYING)) {
             view.getMediaPlayer().play();
+        }else{
+            view.getMediaPlayer().pause();
         }
     }
 
