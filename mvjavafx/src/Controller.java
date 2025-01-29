@@ -3,6 +3,7 @@ import java.io.File;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
@@ -13,6 +14,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class Controller {
 
@@ -27,10 +29,11 @@ public class Controller {
     }
 
     @FXML
-    private Button Acelerar;
-
-    @FXML
     private Button backwards;
+
+    public void retroceso(ActionEvent event){
+        view.getMediaPlayer().seek(new Duration(view.getMediaPlayer().getCurrentTime().toMillis()-10000));
+    }
 
     @FXML
     private ProgressBar bar;
@@ -46,6 +49,10 @@ public class Controller {
 
     @FXML
     private Button forward;
+
+    public void avance(ActionEvent event){
+        view.getMediaPlayer().seek(new Duration(view.getMediaPlayer().getCurrentTime().toMillis()+10000));
+    }
 
     @FXML
     private Separator library;
@@ -85,6 +92,14 @@ public class Controller {
     @FXML
     private Button mute;
 
+    public void mutear(ActionEvent event){
+        if (view.getMediaPlayer().isMute()) {
+            view.getMediaPlayer().setMute(false);
+        }else{
+            view.getMediaPlayer().setMute(true);
+        }
+    }
+
     @FXML
     private Button play;
 
@@ -116,6 +131,8 @@ public class Controller {
         video.getChildren().add(view);
 
         player.play();
+        view.getMediaPlayer().setRate(Double.parseDouble(videoSpeed.getSelectionModel().getSelectedItem().toString().replace("x", "")));
+        
     }
 
     @FXML
@@ -126,5 +143,14 @@ public class Controller {
 
     @FXML
     private ScrollPane videos;
+
+    @FXML
+    private ChoiceBox<?> videoSpeed;
+
+    public void changeSpeed(ActionEvent event){
+        if(view != null){
+            view.getMediaPlayer().setRate(Double.parseDouble(videoSpeed.getSelectionModel().getSelectedItem().toString().replace("x", "")));
+        }
+    }
 
 }
