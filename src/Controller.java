@@ -1,3 +1,4 @@
+import javafx.event.EventHandler;
 import java.io.File;
 
 import javafx.event.ActionEvent;
@@ -50,8 +51,9 @@ public class Controller {
     @FXML
     private Button forward;
 
+    @FXML
     public void avance(ActionEvent event){
-        view.getMediaPlayer().seek(new Duration(view.getMediaPlayer().getCurrentTime().toMillis()+10000));
+        view.getMediaPlayer().seek(new Duration(view.getMediaPlayer().getCurrentTime().toMillis()+100000));
     }
 
     @FXML
@@ -120,19 +122,37 @@ public class Controller {
     @FXML
     private HBox video;
 
-    public void playVideo(ActionEvent event){
-        video.getChildren().clear();
-        Media media = new Media (new File("VID-20250110-WA0003.mp4").toURI().toString());
-        player = new MediaPlayer (media);
-        view = new MediaView (player);
-        view.fitHeightProperty().bind(video.heightProperty());
-        view.fitWidthProperty().bind(video.widthProperty());
+    @FXML
+    private VBox scroller;
 
-        video.getChildren().add(view);
+    @FXML
+    public void addButtons(){
+        File directory = new File("res");
+        directory.mkdir();
+        File[] files = directory.listFiles();
+        if(files != null){
+            for(File file : files){
+                Button added = new Button(file.getName());
+                added.setOnAction(new EventHandler<ActionEvent>(){
+                    @Override
+                    public void handle(ActionEvent event){
+                        video.getChildren().clear();
+                        Media media = new Media (new File(file.getPath()).toURI().toString());
+                        player = new MediaPlayer (media);
+                        view = new MediaView (player);
+                        view.fitHeightProperty().bind(video.heightProperty());
+                        view.fitWidthProperty().bind(video.widthProperty());
 
-        player.play();
-        view.getMediaPlayer().setRate(Double.parseDouble(videoSpeed.getSelectionModel().getSelectedItem().toString().replace("x", "")));
-        
+                        video.getChildren().add(view);
+
+                        player.play();
+                        view.getMediaPlayer().setRate(Double.parseDouble(videoSpeed.getSelectionModel().getSelectedItem().toString().replace("x", "")));
+                        title.setText(added.getText().replace("[.][^.]+$", ""));
+                        scroller.getChildren().add(added);
+                    }
+                });
+            }
+        }
     }
 
     @FXML

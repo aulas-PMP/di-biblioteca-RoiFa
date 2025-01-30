@@ -14,6 +14,8 @@ public class App extends Application{
         FXMLLoader loader = new FXMLLoader(getClass().getResource("trabajo.fxml"));
         Parent root = (Parent) loader.load();
         Controller controller = loader.getController();
+        
+        controller.addButtons();
         controller.setMainWindow(primaryStage);
         primaryStage.setTitle("mis bolas");
         primaryStage.setScene(new Scene(root,800,400));
