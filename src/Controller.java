@@ -137,7 +137,7 @@ public class Controller {
                     @Override
                     public void handle(ActionEvent event){
                         video.getChildren().clear();
-                        Media media = new Media (new File(file.getPath()).toURI().toString());
+                        Media media = new Media(file.getAbsolutePath());
                         player = new MediaPlayer (media);
                         view = new MediaView (player);
                         view.fitHeightProperty().bind(video.heightProperty());
