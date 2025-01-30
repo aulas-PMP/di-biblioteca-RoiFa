@@ -147,10 +147,11 @@ public class Controller {
 
                         player.play();
                         view.getMediaPlayer().setRate(Double.parseDouble(videoSpeed.getSelectionModel().getSelectedItem().toString().replace("x", "")));
-                        title.setText(added.getText().replace("[.][^.]+$", ""));
-                        scroller.getChildren().add(added);
+                        
                     }
                 });
+                title.setText(added.getText().replace("[.][^.]+$", ""));
+                scroller.getChildren().add(added);
             }
         }
     }

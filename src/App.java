@@ -15,11 +15,12 @@ public class App extends Application{
         Parent root = (Parent) loader.load();
         Controller controller = loader.getController();
         
-        controller.addButtons();
+        
         controller.setMainWindow(primaryStage);
         primaryStage.setTitle("mis bolas");
         primaryStage.setScene(new Scene(root,800,400));
         primaryStage.show();
+        controller.addButtons();
         
     }
 }
