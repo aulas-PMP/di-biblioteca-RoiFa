@@ -130,17 +130,23 @@ public class Controller {
     @FXML
     public void addButtons(){
         File directory = new File("res");
+        int horas,minutos,secs;
         directory.mkdir();
         File[] files = directory.listFiles();
         if(files != null){
             for(File file : files){
-                Button added = new Button(file.getName());
+                Button added = new Button(file.getName().replaceFirst("[.][^.]+$", ""));
+                Media media = new Media(new File(file.getPath()).toURI().toString());
+                player = new MediaPlayer (media);
+                horas = (int)(player.getTotalDuration().toHours());
+                minutos = (int)(player.getTotalDuration().toMinutes()-horas*60);
+                secs = (int)(player.getTotalDuration().toSeconds()-horas*3600-minutos*60);
+
                 added.setOnAction(new EventHandler<ActionEvent>(){
                     @Override
                     public void handle(ActionEvent event){
                         video.getChildren().clear();
-                        Media media = new Media(new File(file.getPath()).toURI().toString());
-                        player = new MediaPlayer (media);
+                        
                         view = new MediaView (player);
                         view.fitHeightProperty().bind(video.heightProperty());
                         view.fitWidthProperty().bind(video.widthProperty());
@@ -149,12 +155,16 @@ public class Controller {
 
                         player.play();
                         view.getMediaPlayer().setRate(Double.parseDouble(videoSpeed.getSelectionModel().getSelectedItem().toString().replace("x", "")));
-                        title.setText(added.getText().replace("[.][^.]+$", ""));
+                        title.setText(added.getText().replaceFirst("[.][^.]+$", ""));
                         bindProgress(view.getMediaPlayer(), bar);
+                        view.getMediaPlayer().volumeProperty().bind(volumenBar.valueProperty());
                     }
                 });
+
                 
+                Text txt = new Text(horas+":"+minutos+":"+secs+"    "+file.getName().substring(file.getName().lastIndexOf(".")+1));
                 scroller.getChildren().add(added);
+                scroller.getChildren().add(txt);
             }
         }
     }
@@ -201,6 +211,12 @@ public class Controller {
         if(view != null){
             view.getMediaPlayer().setRate(Double.parseDouble(videoSpeed.getSelectionModel().getSelectedItem().toString().replace("x", "")));
         }
+    }
+
+    public void cleanVideo(ActionEvent event){
+        video.getChildren().clear();
+        view.getMediaPlayer().dispose();
+        title.setText("");
     }
 
 }
