@@ -1,6 +1,7 @@
 import javafx.event.EventHandler;
 import java.io.File;
 
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -8,6 +9,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
@@ -137,7 +139,7 @@ public class Controller {
                     @Override
                     public void handle(ActionEvent event){
                         video.getChildren().clear();
-                        Media media = new Media(file.getAbsolutePath());
+                        Media media = new Media(new File(file.getPath()).toURI().toString());
                         player = new MediaPlayer (media);
                         view = new MediaView (player);
                         view.fitHeightProperty().bind(video.heightProperty());
@@ -147,20 +149,47 @@ public class Controller {
 
                         player.play();
                         view.getMediaPlayer().setRate(Double.parseDouble(videoSpeed.getSelectionModel().getSelectedItem().toString().replace("x", "")));
-                        
+                        title.setText(added.getText().replace("[.][^.]+$", ""));
+                        bindProgress(view.getMediaPlayer(), bar);
                     }
                 });
-                title.setText(added.getText().replace("[.][^.]+$", ""));
+                
                 scroller.getChildren().add(added);
             }
         }
     }
+
+    public void bindProgress(MediaPlayer mp,ProgressBar bar){
+        var binding =
+        Bindings.createDoubleBinding(
+            () -> {
+              var currentTime = player.getCurrentTime();
+              var duration = player.getMedia().getDuration();
+              if (isValidDuration(currentTime) && isValidDuration(duration)) {
+                return currentTime.toMillis() / duration.toMillis();
+              }
+              return ProgressBar.INDETERMINATE_PROGRESS;
+            },
+            player.currentTimeProperty(),
+            player.getMedia().durationProperty());
+        bar.progressProperty().bind(binding);
+    }
+
+    private boolean isValidDuration(Duration d) {
+        return d != null && !d.isIndefinite() && !d.isUnknown();
+      }
 
     @FXML
     private Button slow;
 
     @FXML
     private Text title;
+
+    @FXML
+    private Text volumenText;
+
+    @FXML
+    private Slider volumenBar;
 
     @FXML
     private ScrollPane videos;
