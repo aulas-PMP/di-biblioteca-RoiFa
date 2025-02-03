@@ -21,6 +21,7 @@ public class App extends Application{
         primaryStage.setScene(new Scene(root,800,400));
         primaryStage.show();
         controller.addButtons();
-        
+        controller.volumeConf();
+        primaryStage.getScene().getStylesheets().add("biblio.css");
     }
 }

@@ -1,0 +1,19 @@
+.button{
+    -fx-background-color: rgb(145, 145, 145);
+    -fx-text-fill: rgb(224, 224, 224);
+    margin: 10;
+}
+
+#videoSpeed{
+    -fx-background-color: rgb(145, 145, 145);
+    -fx-text-fill: rgb(224, 224, 224);
+}
+
+#bar{
+    -fx-control-inner-background: rgb(57, 71, 46);
+    -fx-accent: rgb(164, 230, 72);
+}
+
+.vbox{
+    -fx-background-color:rgb(145, 145, 145);
+}
