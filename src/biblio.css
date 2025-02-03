@@ -1,7 +1,9 @@
 .button{
     -fx-background-color: rgb(145, 145, 145);
     -fx-text-fill: rgb(224, 224, 224);
-    margin: 10;
+    -fx-padding: 5px;
+    -fx-border-insets: 5px;
+    -fx-background-insets: 3px;
 }
 
 #videoSpeed{
@@ -10,10 +12,38 @@
 }
 
 #bar{
-    -fx-control-inner-background: rgb(57, 71, 46);
-    -fx-accent: rgb(164, 230, 72);
+    -fx-control-inner-background: rgb(142, 177, 116);
+    -fx-accent: rgb(100, 136, 50);
 }
 
-.vbox{
-    -fx-background-color:rgb(145, 145, 145);
+#editores{
+    -fx-background-color:rgb(53, 53, 53);
+}
+
+#lateralCenter{
+    -fx-background-color:rgb(53, 53, 53);
+}
+
+#lalibreria{
+    -fx-background-color:rgb(53, 53, 53);
+}
+
+#videos{
+    -fx-background-color:rgb(53, 53, 53);
+}
+
+#scroller{
+    -fx-background-color:rgb(53, 53, 53);
+}
+
+#editores{
+    -fx-background-color:rgb(53, 53, 53);
+}
+
+.text{
+    -fx-text-fill: rgb(224, 224, 224);
+}
+
+#Title{
+    -fx-text-fill: rgb(224, 224, 224);
 }

@@ -65,6 +65,9 @@ public class Controller {
     private HBox editors;
 
     @FXML
+    private HBox lateralCenter;
+
+    @FXML
     private Button forward;
 
     @FXML
@@ -152,6 +155,29 @@ public class Controller {
                 Media media = new Media(new File(file.getPath()).toURI().toString());
                 player = new MediaPlayer (media);
 
+                added.setOnAction(new EventHandler<ActionEvent>(){
+                    @Override
+                    public void handle(ActionEvent event){
+                        view = new MediaView (new MediaPlayer(new Media(file.toURI().toString())));
+
+                        video.getChildren().clear();
+                        bar.progressProperty().unbind();
+                        bar.progressProperty().setValue(ProgressBar.INDETERMINATE_PROGRESS);
+                        view.fitHeightProperty().bind(video.heightProperty());
+                        view.fitWidthProperty().bind(video.widthProperty());
+
+                        video.getChildren().add(view);
+
+                        
+                        view.getMediaPlayer().setRate(Double.parseDouble(videoSpeed.getSelectionModel().getSelectedItem().toString().replace("x", "")));
+                        title.setText(added.getText().replaceFirst("[.][^.]+$", ""));
+                        bindProgress(view.getMediaPlayer(), bar);
+                        player.play();
+                        pause(event);
+                    }
+                });
+
+
                 Text txt = new Text();
                 player.setOnReady(new Runnable() {
                     public void run(){
@@ -160,25 +186,6 @@ public class Controller {
                         int secs = (int)(player.getMedia().getDuration().toSeconds()-horas*3600-minutos*60);
 
                         txt.setText(horas+":"+minutos+":"+secs+"    "+file.getName().substring(file.getName().lastIndexOf(".")+1));
-                    }
-                });
-
-                added.setOnAction(new EventHandler<ActionEvent>(){
-                    @Override
-                    public void handle(ActionEvent event){
-                        video.getChildren().clear();
-                        
-                        view = new MediaView (player);
-                        view.fitHeightProperty().bind(video.heightProperty());
-                        view.fitWidthProperty().bind(video.widthProperty());
-
-                        video.getChildren().add(view);
-
-                        player.play();
-                        view.getMediaPlayer().setRate(Double.parseDouble(videoSpeed.getSelectionModel().getSelectedItem().toString().replace("x", "")));
-                        title.setText(added.getText().replaceFirst("[.][^.]+$", ""));
-                        bindProgress(view.getMediaPlayer(), bar);
-                        view.getMediaPlayer().volumeProperty().bind(volumenBar.valueProperty());
                     }
                 });
 
