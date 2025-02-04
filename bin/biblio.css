@@ -28,6 +28,10 @@
     -fx-background-color:rgb(53, 53, 53);
 }
 
+#videos > .viewport{
+    -fx-background-color: transparent;
+}
+
 #videos{
     -fx-background-color:rgb(53, 53, 53);
 }
@@ -44,6 +48,8 @@
     -fx-text-fill: rgb(224, 224, 224);
 }
 
-#Title{
+.title{
     -fx-text-fill: rgb(224, 224, 224);
+    -fx-font-size: 25px;
+    -fx-font-family: 'Times New Roman';
 }

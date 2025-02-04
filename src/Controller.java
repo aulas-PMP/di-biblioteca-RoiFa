@@ -1,5 +1,7 @@
 import javafx.event.EventHandler;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -11,12 +13,16 @@ import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
@@ -25,6 +31,7 @@ import javafx.scene.media.MediaView;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -41,7 +48,7 @@ public class Controller {
 
     private String currentFolder="res";
 
-    public void setMainWindow(Stage MainWindow){
+    public void setMainWindow(Stage mainWindow){
         this.mainWindow = mainWindow;
     }
 
@@ -49,7 +56,7 @@ public class Controller {
     private Button backwards;
 
     public void retroceso(ActionEvent event){
-        view.getMediaPlayer().seek(new Duration(view.getMediaPlayer().getCurrentTime().toMillis()-10000));
+        player.seek(new Duration(player.getCurrentTime().toMillis()-10000));
     }
 
     @FXML
@@ -72,7 +79,7 @@ public class Controller {
 
     @FXML
     public void avance(ActionEvent event){
-        view.getMediaPlayer().seek(new Duration(view.getMediaPlayer().getCurrentTime().toMillis()+100000));
+        player.seek(new Duration((double)(player.getCurrentTime().toMillis()+10000)));
     }
 
     @FXML
@@ -114,10 +121,10 @@ public class Controller {
     private Button mute;
 
     public void mutear(ActionEvent event){
-        if (view.getMediaPlayer().isMute()) {
-            view.getMediaPlayer().setMute(false);
+        if (player.isMute()) {
+            player.setMute(false);
         }else{
-            view.getMediaPlayer().setMute(true);
+            player.setMute(true);
         }
     }
 
@@ -125,10 +132,10 @@ public class Controller {
     private Button play;
 
     public void pause(ActionEvent event){
-        if (!(view.getMediaPlayer().getStatus()==MediaPlayer.Status.PLAYING)) {
-            view.getMediaPlayer().play();
+        if (!(player.getStatus()==MediaPlayer.Status.PLAYING)) {
+            player.play();
         }else{
-            view.getMediaPlayer().pause();
+            player.pause();
         }
     }
 
@@ -151,6 +158,7 @@ public class Controller {
         File[] files = directory.listFiles();
         if(files != null){
             for(File file : files){
+                Text txt = new Text();
                 Button added = new Button(file.getName().replaceFirst("[.][^.]+$", ""));
                 Media media = new Media(new File(file.getPath()).toURI().toString());
                 player = new MediaPlayer (media);
@@ -158,27 +166,42 @@ public class Controller {
                 added.setOnAction(new EventHandler<ActionEvent>(){
                     @Override
                     public void handle(ActionEvent event){
-                        view = new MediaView (new MediaPlayer(new Media(file.toURI().toString())));
-
+                        if(!file.getName().substring((file.getName().length()-3)).equals("mp3")){
+                            player = new MediaPlayer(new Media(file.toURI().toString()));
+                            view = new MediaView (player);
+                            view.fitHeightProperty().bind(video.heightProperty());
+                            view.fitWidthProperty().bind(video.widthProperty());
+                        }else{
+                            player = new MediaPlayer(new Media(file.toURI().toString()));
+                        }
+                        
                         video.getChildren().clear();
                         bar.progressProperty().unbind();
-                        bar.progressProperty().setValue(ProgressBar.INDETERMINATE_PROGRESS);
-                        view.fitHeightProperty().bind(video.heightProperty());
-                        view.fitWidthProperty().bind(video.widthProperty());
-
-                        video.getChildren().add(view);
-
                         
-                        view.getMediaPlayer().setRate(Double.parseDouble(videoSpeed.getSelectionModel().getSelectedItem().toString().replace("x", "")));
+                        if(!file.getName().substring((file.getName().length()-3)).equals("mp3")){
+                            video.getChildren().add(view);
+                        }else{
+                            Image image = null;
+                            try {
+                                image = new Image(new FileInputStream("music.jpg"));
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                            ImageView viewImg = new ImageView();
+                            viewImg.setImage(image);
+                            viewImg.setFitHeight(300);
+                            viewImg.setFitWidth(300);
+                            video.getChildren().add(viewImg);
+                        }
+                        
+                        player.setRate(Double.parseDouble(videoSpeed.getSelectionModel().getSelectedItem().toString().replace("x", "")));
                         title.setText(added.getText().replaceFirst("[.][^.]+$", ""));
-                        bindProgress(view.getMediaPlayer(), bar);
+                        bindProgress(player, bar);
                         player.play();
                         pause(event);
                     }
                 });
-
-
-                Text txt = new Text();
+                
                 player.setOnReady(new Runnable() {
                     public void run(){
                         int horas = (int)(player.getMedia().getDuration().toHours());
@@ -244,13 +267,13 @@ public class Controller {
 
     public void changeSpeed(ActionEvent event){
         if(view != null){
-            view.getMediaPlayer().setRate(Double.parseDouble(videoSpeed.getSelectionModel().getSelectedItem().toString().replace("x", "")));
+            player.setRate(Double.parseDouble(videoSpeed.getSelectionModel().getSelectedItem().toString().replace("x", "")));
         }
     }
 
     public void cleanVideo(ActionEvent event){
         video.getChildren().clear();
-        view.getMediaPlayer().dispose();
+        player.dispose();
         title.setText("");
     }
 
@@ -274,49 +297,71 @@ public class Controller {
                 Media media = new Media(new File(file.getPath()).toURI().toString());
                 player = new MediaPlayer (media);
 
-                Text txt = new Text();
-                player.setOnReady(new Runnable() {
-                    public void run(){
-                        int horas = (int)(player.getMedia().getDuration().toHours());
-                        int minutos = (int)(player.getMedia().getDuration().toMinutes()-horas*60);
-                        int secs = (int)(player.getMedia().getDuration().toSeconds()-horas*3600-minutos*60);
-
-                        txt.setText(horas+":"+minutos+":"+secs+"    "+file.getName().substring(file.getName().lastIndexOf(".")+1));
-                    }
-                });
-
                 added.setOnAction(new EventHandler<ActionEvent>(){
                     @Override
                     public void handle(ActionEvent event){
-                        video.getChildren().clear();
+                        if(!file.getName().substring((file.getName().length()-3)).equals("mp3")){
+                            view = new MediaView (new MediaPlayer(new Media(file.toURI().toString())));
+                            view.fitHeightProperty().bind(video.heightProperty());
+                            view.fitWidthProperty().bind(video.widthProperty());
+                        }else{
+                            player = new MediaPlayer(new Media(file.toURI().toString()));
+                        }
                         
-                        view = new MediaView (player);
-                        view.fitHeightProperty().bind(video.heightProperty());
-                        view.fitWidthProperty().bind(video.widthProperty());
-
-                        video.getChildren().add(view);
-
-                        player.play();
-                        view.getMediaPlayer().setRate(Double.parseDouble(videoSpeed.getSelectionModel().getSelectedItem().toString().replace("x", "")));
+                        video.getChildren().clear();
+                        bar.progressProperty().unbind();
+                        
+                        if(!file.getName().substring((file.getName().length()-3)).equals("mp3")){
+                            video.getChildren().add(view);
+                        }else{
+                            Image image = null;
+                            try {
+                                image = new Image(new FileInputStream("music.jpg"));
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                            ImageView viewImg = new ImageView();
+                            viewImg.setImage(image);
+                            video.getChildren().add(viewImg);
+                        }
+                        
+                        player.setRate(Double.parseDouble(videoSpeed.getSelectionModel().getSelectedItem().toString().replace("x", "")));
                         title.setText(added.getText().replaceFirst("[.][^.]+$", ""));
-                        bindProgress(view.getMediaPlayer(), bar);
-                        view.getMediaPlayer().volumeProperty().bind(volumenBar.valueProperty());
+                        bindProgress(player, bar);
+                        player.play();
+                        pause(event);
                     }
                 });
+                Text txt = new Text();
+                if(!file.getName().substring((file.getName().length()-3)).equals("mp3")){
+                    player.setOnReady(new Runnable() {
+                        public void run(){
+                            int horas = (int)(player.getMedia().getDuration().toHours());
+                            int minutos = (int)(player.getMedia().getDuration().toMinutes()-horas*60);
+                            int secs = (int)(player.getMedia().getDuration().toSeconds()-horas*3600-minutos*60);
+    
+                            txt.setText(horas+":"+minutos+":"+secs+"    "+file.getName().substring(file.getName().lastIndexOf(".")+1));
+                        }
+                    });
+                }
 
                 scroller.getChildren().add(added);
                 scroller.getChildren().add(txt);
+
+                Alert alertita = new Alert(AlertType.INFORMATION);
+                alertita.setTitle("Video Agregado");
+                alertita.setHeaderText(null);
+                alertita.initModality(Modality.NONE);
+                alertita.setContentText("Se ha agregado correctamente "+file.getName()+" a la biblioteca");
+                alertita.show();
     }
 
     public void link(ActionEvent event){
-        Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-            try {
-                desktop.browse(URI.create("https://ningunlado.com"));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        Alert alertita = new Alert(AlertType.INFORMATION);
+        alertita.setTitle("Desarrollador");
+        alertita.setHeaderText(null);
+        alertita.setContentText("Hecho por: Roi Fandiño Alfonsín\nReproductor de musica: MoodyBlues");
+        alertita.show();
     }
 
     public void saveAs(ActionEvent event){
@@ -330,7 +375,24 @@ public class Controller {
 
             Files.copy(Path.of(currentFolder+"/"+title.getText()+".mp4"), Path.of(newDir.getCanonicalPath()+"/"+Reader.readTheLine()+".mp4"),StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
+            //Nada
+        }
+    }
+
+    public void verEnCarpeta(ActionEvent event){
+        try {
+            Runtime.getRuntime().exec(currentFolder);
+        } catch (IOException e) {
             e.printStackTrace();
+        }
+
+    }
+
+    public void fullScreen(ActionEvent event){
+        if (mainWindow.isFullScreen()) {
+            mainWindow.setFullScreen(false);
+        }else{
+            mainWindow.setFullScreen(true);
         }
     }
 

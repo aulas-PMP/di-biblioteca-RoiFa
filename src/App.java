@@ -17,11 +17,10 @@ public class App extends Application{
         
         
         controller.setMainWindow(primaryStage);
-        primaryStage.setTitle("mis bolas");
-        primaryStage.setScene(new Scene(root,800,400));
+        primaryStage.setTitle("Moody Blues");
+        primaryStage.setScene(new Scene(root,850,600));
         primaryStage.show();
         controller.addButtons();
-        controller.volumeConf();
         primaryStage.getScene().getStylesheets().add("biblio.css");
     }
 }

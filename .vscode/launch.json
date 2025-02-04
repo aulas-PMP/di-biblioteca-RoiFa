@@ -6,32 +6,11 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Main",
-            "request": "launch",
-            "mainClass": "Main",
-            "projectName": "di-biblioteca-RoiFa_cf3986da"
-        },
-        {
-            "type": "java",
             "name": "App",
             "request": "launch",
             "mainClass": "App",
-            "projectName": "di-biblioteca-RoiFa_ec125776",
+            "projectName": "di-biblioteca-RoiFa_cf3986da",
             "vmArgs": "--module-path \"/media/rfandinho/Crucial X9/DAM2/ID/javafx-sdk-23.0.2/lib\" --add-modules javafx.controls,javafx.fxml,javafx.media"
-        },
-        {
-            "type": "java",
-            "name": "Main",
-            "request": "launch",
-            "mainClass": "Main",
-            "projectName": "di-biblioteca-RoiFa_ec125776",
-            "vmArgs": "--module-path \"/media/rfandinho/Crucial X9/DAM2/ID/javafx-sdk-23.0.2/lib\" --add-modules javafx.controls,javafx.fxml,javafx.media"
-        },
-        {
-            "type": "java",
-            "name": "Current File",
-            "request": "launch",
-            "mainClass": "${file}"
         }
     ]
 }
