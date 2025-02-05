@@ -53,3 +53,11 @@
     -fx-font-size: 25px;
     -fx-font-family: 'Times New Roman';
 }
+
+.menu:hover{
+    -fx-background-color:rgb(100, 136, 50);
+}
+
+.menu-item:hover{
+    -fx-background-color:rgb(100, 136, 50);
+}
