@@ -213,6 +213,7 @@ public class Controller {
                 });
 
                 scroller.getChildren().add(added);
+                txt.getStyleClass().add("text");
                 scroller.getChildren().add(txt);
             }
         }
@@ -346,6 +347,7 @@ public class Controller {
                 }
 
                 scroller.getChildren().add(added);
+                txt.getStyleClass().add("text");
                 scroller.getChildren().add(txt);
 
                 Alert alertita = new Alert(AlertType.INFORMATION);
