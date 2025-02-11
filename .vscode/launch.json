@@ -6,9 +6,9 @@
     "configurations": [
         {
             "type": "java",
-            "name": "App",
+            "name": "Fakemain",
             "request": "launch",
-            "mainClass": "App",
+            "mainClass": "Fakemain",
             "projectName": "di-biblioteca-RoiFa_cf3986da",
             "vmArgs": "--module-path \"/media/rfandinho/Crucial X9/DAM2/ID/javafx-sdk-23.0.2/lib\" --add-modules javafx.controls,javafx.fxml,javafx.media"
         }

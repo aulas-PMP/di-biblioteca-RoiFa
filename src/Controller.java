@@ -156,63 +156,67 @@ public class Controller {
         File[] files = directory.listFiles();
         if(files != null){
             for(File file : files){
-                Text txt = new Text();
-                Button added = new Button(file.getName().replaceFirst("[.][^.]+$", ""));
-                Media media = new Media(new File(file.getPath()).toURI().toString());
-                player = new MediaPlayer (media);
+                try {
+                    Text txt = new Text();
+                    Button added = new Button(file.getName().replaceFirst("[.][^.]+$", ""));
+                    Media media = new Media(new File(file.getPath()).toURI().toString());
+                    player = new MediaPlayer (media);
 
-                added.setOnAction(new EventHandler<ActionEvent>(){
-                    @Override
-                    public void handle(ActionEvent event){
-                        if(!file.getName().substring((file.getName().length()-3)).equals("mp3")){
-                            player = new MediaPlayer(new Media(file.toURI().toString()));
-                            view = new MediaView (player);
-                            view.fitHeightProperty().bind(video.heightProperty());
-                            view.fitWidthProperty().bind(video.widthProperty());
-                        }else{
-                            player = new MediaPlayer(new Media(file.toURI().toString()));
-                        }
-                        
-                        video.getChildren().clear();
-                        bar.progressProperty().unbind();
-                        
-                        if(!file.getName().substring((file.getName().length()-3)).equals("mp3")){
-                            video.getChildren().add(view);
-                        }else{
-                            Image image = null;
-                            try {
-                                image = new Image(new FileInputStream("music.jpg"));
-                            } catch (FileNotFoundException e) {
-                                e.printStackTrace();
+                    added.setOnAction(new EventHandler<ActionEvent>(){
+                        @Override
+                        public void handle(ActionEvent event){
+                            if(!file.getName().substring((file.getName().length()-3)).equals("mp3")){
+                                player = new MediaPlayer(new Media(file.toURI().toString()));
+                                view = new MediaView (player);
+                                view.fitHeightProperty().bind(video.heightProperty());
+                                view.fitWidthProperty().bind(video.widthProperty());
+                            }else{
+                                player = new MediaPlayer(new Media(file.toURI().toString()));
                             }
-                            ImageView viewImg = new ImageView();
-                            viewImg.setImage(image);
-                            viewImg.setFitHeight(300);
-                            viewImg.setFitWidth(300);
-                            video.getChildren().add(viewImg);
+                            
+                            video.getChildren().clear();
+                            bar.progressProperty().unbind();
+                            
+                            if(!file.getName().substring((file.getName().length()-3)).equals("mp3")){
+                                video.getChildren().add(view);
+                            }else{
+                                Image image = null;
+                                try {
+                                    image = new Image(new FileInputStream("music.jpg"));
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                }
+                                ImageView viewImg = new ImageView();
+                                viewImg.setImage(image);
+                                viewImg.setFitHeight(300);
+                                viewImg.setFitWidth(300);
+                                video.getChildren().add(viewImg);
+                            }
+                            
+                            player.setRate(Double.parseDouble(videoSpeed.getSelectionModel().getSelectedItem().toString().replace("x", "")));
+                            title.setText(added.getText().replaceFirst("[.][^.]+$", ""));
+                            bindProgress(player, bar);
+                            player.play();
+                            pause(event);
                         }
-                        
-                        player.setRate(Double.parseDouble(videoSpeed.getSelectionModel().getSelectedItem().toString().replace("x", "")));
-                        title.setText(added.getText().replaceFirst("[.][^.]+$", ""));
-                        bindProgress(player, bar);
-                        player.play();
-                        pause(event);
-                    }
-                });
-                
-                player.setOnReady(new Runnable() {
-                    public void run(){
-                        int horas = (int)(player.getMedia().getDuration().toHours());
-                        int minutos = (int)(player.getMedia().getDuration().toMinutes()-horas*60);
-                        int secs = (int)(player.getMedia().getDuration().toSeconds()-horas*3600-minutos*60);
+                    });
+                    
+                    player.setOnReady(new Runnable() {
+                        public void run(){
+                            int horas = (int)(player.getMedia().getDuration().toHours());
+                            int minutos = (int)(player.getMedia().getDuration().toMinutes()-horas*60);
+                            int secs = (int)(player.getMedia().getDuration().toSeconds()-horas*3600-minutos*60);
 
-                        txt.setText(horas+":"+minutos+":"+secs+"    "+file.getName().substring(file.getName().lastIndexOf(".")+1));
-                    }
-                });
+                            txt.setText(horas+":"+minutos+":"+secs+"    "+file.getName().substring(file.getName().lastIndexOf(".")+1));
+                        }
+                    });
 
-                scroller.getChildren().add(added);
-                txt.getStyleClass().add("text");
-                scroller.getChildren().add(txt);
+                    scroller.getChildren().add(added);
+                    txt.getStyleClass().add("text");
+                    scroller.getChildren().add(txt);
+                } catch (Exception e) {
+                    //nada
+                }
             }
         }
     }
